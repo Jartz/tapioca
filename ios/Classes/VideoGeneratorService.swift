@@ -99,7 +99,9 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           }
           let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
           let titleLayer = CALayer()
-          let uiImage = imageWith(name: textOverlay.text, width: size.width, height: size.width, size: textOverlay.size.intValue, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
+           
+          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
+          
           titleLayer.contents = uiImage?.cgImage
       
           titleLayer.frame = CGRect(x: CGFloat(textOverlay.x.intValue), y: size.height - CGFloat(textOverlay.y.intValue) - uiImage!.size.height,
@@ -208,22 +210,27 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
       }
 
 
-      private func imageWith(name: String, width: CGFloat, height: CGFloat, size: Int, color: UIColor) -> UIImage? {
-        let frame = CGRect(x: 0, y: 0, width: width, height: CGFloat(size))
+      private func imageWith(name: String, width: CGFloat, size: Int, color: UIColor) -> UIImage? {
+        let frame = CGRect(x: 0, y: 0, width: width, height: 0)
         let nameLabel = UILabel(frame: frame)
         nameLabel.textAlignment = .left
-        nameLabel.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0)
+        nameLabel.lineBreakMode = .byWordWrapping
+        nameLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1)
         nameLabel.textColor = color
         nameLabel.font = UIFont.boldSystemFont(ofSize: CGFloat(size))
         nameLabel.text = name
         nameLabel.numberOfLines = 0
         nameLabel.sizeToFit()
-        UIGraphicsBeginImageContext(frame.size)
+     
+        UIGraphicsBeginImageContextWithOptions(nameLabel.bounds.size, false, 0)
+        nameLabel.drawHierarchy(in: nameLabel.bounds, afterScreenUpdates: true)
+
         if let currentContext = UIGraphicsGetCurrentContext() {
          nameLabel.layer.render(in: currentContext)
          let nameImage = UIGraphicsGetImageFromCurrentImageContext()
          return nameImage
        }
+       print ("error")
        return nil
      }
    }
@@ -256,3 +263,5 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
     let size: NSNumber
     let color: String
   }
+
+
