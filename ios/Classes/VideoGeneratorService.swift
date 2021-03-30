@@ -86,10 +86,13 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           filters.append(layer)
 
           case "TextOverlay":
+        
+          
           guard let text = value["text"] as? String,
           let x = value["x"] as? NSNumber,
           let y = value["y"] as? NSNumber,
           let textSize = value["size"] as? NSNumber,
+          let fontName = value["font"] as? String,
           let color = value["color"] as? String else {
             print("not found text overlay")
             result(FlutterError(code: "processing_data_invalid",
@@ -100,13 +103,15 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
           let titleLayer = CALayer()
            
-          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
+          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue,fontName:fontName, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
           
           titleLayer.contents = uiImage?.cgImage
       
           titleLayer.frame = CGRect(x: CGFloat(textOverlay.x.intValue), y: size.height - CGFloat(textOverlay.y.intValue) - uiImage!.size.height,
             width: uiImage!.size.width, height: uiImage!.size.height)
           filters.append(titleLayer)
+    
+
           case "ImageOverlay":
           guard let bitmap = value["bitmap"] as? FlutterStandardTypedData,
           let x = value["x"] as? NSNumber,
@@ -210,14 +215,17 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
       }
 
 
-      private func imageWith(name: String, width: CGFloat, size: Int, color: UIColor) -> UIImage? {
+      private func imageWith(name: String, width: CGFloat, size: Int,fontName:String, color: UIColor) -> UIImage? {
         let frame = CGRect(x: 0, y: 0, width: width, height: 0)
         let nameLabel = UILabel(frame: frame)
         nameLabel.textAlignment = .left
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1)
         nameLabel.textColor = color
-        nameLabel.font = UIFont.boldSystemFont(ofSize: CGFloat(size))
+
+        let customFont = self.fontsMydogpal(nameFont:fontName,size:size)
+
+        nameLabel.font = customFont
         nameLabel.text = name
         nameLabel.numberOfLines = 0
         nameLabel.sizeToFit()
@@ -232,6 +240,23 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
        }
        print ("error")
        return nil
+     }
+
+     private func fontsMydogpal(nameFont:String,size: Int ) -> UIFont?{
+       
+       switch nameFont {
+        case "Montserrat" :
+          return  UIFont(name: "SyneMono-Regular", size:CGFloat(size))
+
+        case "Satisfy":
+         return  UIFont(name: "Satisfy-Regular", size:CGFloat(size))
+
+        case "Staatliches":
+          return  UIFont(name: "Staatliches-Regular", size:CGFloat(size))
+
+        default:
+           return UIFont.boldSystemFont(ofSize:CGFloat(size))
+        }
      }
    }
 
