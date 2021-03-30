@@ -93,6 +93,7 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           let y = value["y"] as? NSNumber,
           let textSize = value["size"] as? NSNumber,
           let fontName = value["font"] as? String,
+          let withBackground = value["withBackground"] as? Bool,
           let color = value["color"] as? String else {
             print("not found text overlay")
             result(FlutterError(code: "processing_data_invalid",
@@ -103,7 +104,7 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
           let titleLayer = CALayer()
            
-          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue,fontName:fontName, color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")))
+          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue,fontName:fontName,color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")),withBackground:withBackground)
           
           titleLayer.contents = uiImage?.cgImage
       
@@ -215,13 +216,19 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
       }
 
 
-      private func imageWith(name: String, width: CGFloat, size: Int,fontName:String, color: UIColor) -> UIImage? {
+      private func imageWith(name: String, width: CGFloat, size: Int,fontName:String, color: UIColor,withBackground: Bool) -> UIImage? {
         let frame = CGRect(x: 0, y: 0, width: width, height: 0)
         let nameLabel = UILabel(frame: frame)
         nameLabel.textAlignment = .left
         nameLabel.lineBreakMode = .byWordWrapping
-        nameLabel.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1)
+        if(withBackground){
+        nameLabel.backgroundColor = color
+        nameLabel.textColor = .white
+        }else{
+        nameLabel.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0)
         nameLabel.textColor = color
+        }
+       
 
         let customFont = self.fontsMydogpal(nameFont:fontName,size:size)
 

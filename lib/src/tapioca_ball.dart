@@ -14,9 +14,9 @@ abstract class TapiocaBall {
   }
 
   /// Creates a object to overlay text.
-  static TapiocaBall textOverlay(
-      String text, int x, int y, int size, Color color, FontTapioca font) {
-    return _TextOverlay(text, x, y, size, color, font);
+  static TapiocaBall textOverlay(String text, int x, int y, int size,
+      Color color, FontTapioca font, bool withBackground) {
+    return _TextOverlay(text, x, y, size, color, font, withBackground);
   }
 
   /// Creates a object to overlay a image.
@@ -78,7 +78,9 @@ class _TextOverlay extends TapiocaBall {
   final Color color;
   final String type = "TextOverlay";
   final FontTapioca font;
-  _TextOverlay(this.text, this.x, this.y, this.size, this.color, this.font);
+  final bool withBackground;
+  _TextOverlay(this.text, this.x, this.y, this.size, this.color, this.font,
+      this.withBackground);
 
   Map<String, dynamic> toMap() {
     return {
@@ -88,7 +90,8 @@ class _TextOverlay extends TapiocaBall {
       'y': y,
       'size': size,
       'color': '#${color.value.toRadixString(16).substring(2)}',
-      'font': font.toString().split('.').last
+      'font': font.toString().split('.').last,
+      'withBackground': withBackground
     };
   }
 
