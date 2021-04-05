@@ -93,6 +93,7 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
           let y = value["y"] as? NSNumber,
           let textSize = value["size"] as? NSNumber,
           let fontName = value["font"] as? String,
+          let textAlign = value["textAlign"] as? String,
           let withBackground = value["withBackground"] as? Bool,
           let color = value["color"] as? String else {
             print("not found text overlay")
@@ -101,10 +102,12 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
               details: nil))
             return
           }
+
+          print(textAlign);
           let textOverlay = TextOverlay(text: text, x: x, y: y, size: textSize, color: color)
           let titleLayer = CALayer()
            
-          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue,fontName:fontName,color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")),withBackground:withBackground)
+          let uiImage = imageWith(name: textOverlay.text, width: size.width, size: textOverlay.size.intValue,fontName:fontName,color: UIColor(hex:textOverlay.color.replacingOccurrences(of: "#", with: "")),withBackground:withBackground,textAlign:textAlign)
           
           titleLayer.contents = uiImage?.cgImage
       
@@ -216,10 +219,10 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
       }
 
 
-      private func imageWith(name: String, width: CGFloat, size: Int,fontName:String, color: UIColor,withBackground: Bool) -> UIImage? {
+      private func imageWith(name: String, width: CGFloat, size: Int,fontName:String, color: UIColor,withBackground: Bool,textAlign:String) -> UIImage? {
         let frame = CGRect(x: 0, y: 0, width: width, height: 0)
         let nameLabel = UILabel(frame: frame)
-        nameLabel.textAlignment = .left
+        nameLabel.textAlignment = self.getTextAlign(textAlign)
         nameLabel.lineBreakMode = .byWordWrapping
         if(withBackground){
         nameLabel.backgroundColor = color
@@ -248,9 +251,23 @@ public class VideoGeneratorService: VideoGeneratorServiceInterface {
        print ("error")
        return nil
      }
+    
+    
+    private func getTextAlign(_ textAlignString : String) -> NSTextAlignment  {
+        switch textAlignString {
+         case "center" :
+            return  .center
+         case "left":
+            return  .left
+
+         case "right":
+            return .right
+         default:
+            return .center
+         }
+    }
 
      private func fontsMydogpal(nameFont:String,size: Int ) -> UIFont?{
-       
        switch nameFont {
         case "Montserrat" :
           return  UIFont(name: "SyneMono-Regular", size:CGFloat(size))
